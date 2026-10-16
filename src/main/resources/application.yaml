@@ -1,3 +1,26 @@
 spring:
   application:
     name: kafka-workshop-notification-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092,localhost:9094,localhost:9096}
+    consumer:
+      group-id: ${spring.application.name}-consumer-group
+      # первый запуск группы — читаем топик с начала, чтобы не потерять сообщения
+      auto-offset-reset: earliest
+
+server:
+  port: ${SERVER_PORT:8081}
+
+app:
+  kafka-topics:
+    backoff-interval: ${KAFKA_TOPIC_BACKOFF_INTERVAL:500}
+    backoff-attempts: ${KAFKA_TOPIC_BACKOFF_ATTEMPTS:5}
+    credit-topic:
+      name: ${KAFKA_TOPIC_CREDIT:kafka.workflow.topic}
+  notification:
+    # имитация «тяжёлой» работы: столько миллисекунд сервис «думает» над каждым уведомлением
+    processing-delay-ms: ${NOTIFICATION_DELAY_MS:3000}
+  telegram:
+    # токен и chat_id — только из переменных окружения, в код и git их не кладём
+    bot-token: ${TELEGRAM_BOT_TOKEN:8992177327:AAF6OtBWb5EqK7AEhlkL6iLRwBdTv2kMS5w}
+    chat-id: ${TELEGRAM_CHAT_ID:@kata_kafka_demo}
